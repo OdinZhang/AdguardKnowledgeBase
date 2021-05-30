@@ -221,22 +221,24 @@ visible: true
     <img src="https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/5_cosmetic_rules.svg" />
 </object>
 
-Cosmetic rules are based on using a special language named CSS, which every browser understands. Basically, it adds a new CSS style to the website which purpose is to hide particular elements. You can learn more about CSS in general [here](https://developer.mozilla.org/en-US/docs/Learn/CSS/Introduction_to_CSS/Selectors).
+装饰规则基于每个浏览器都能理解的特殊语言 CSS。最基础的是它可以给网页上将要隐藏的特定元素添加一个 CSS 样式。你可以从[这里](https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Selectors)了解更多 CSS 的知识。
 
 > AdGuard [extends CSS](#extended-css-selectors) and lets filters developers handle much more complicated cases. However, to use these extended rules, you need to be fluent in regular CSS.
 
+> AdGuard [拓展 CSS](#extended-css-selectors)并且可以使过滤器开发者处理更多复杂的情形。但是想要使用这些规则，你必须熟练使用常用的 CSS。
+
 <a id="example-popular-css-selectors"></a>
-#### Popular CSS selectors
+#### 常用的 CSS 选择器
 
 | 名字 | CSS 选择器 | 描述 |
 | ------| ------ | ----------- |
-| ID 选择器 | `#banners`   | Matches all elements with `id` attribute equal to `banners`.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_id_selector.png) |
-| 类选择器 | `.banners`   | Matches all elements with `class` attribute containing `banners`.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_selector.png) |
-| 属性选择器 | `div[class="banners"]`   | Matches all `div` elements with `class` attribute **exactly equal** to `banners`.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr.png) |
-| Attribute substring selector | `div[class^="advert1"]	`   | Matches all `div` elements which `class` attribute **starts with** the `advert1` string.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_start.png) |
-| Attribute substring selector | `div[class$="banners_ads"]`   | Matches all `div` elements which `class` attribute **ends with** the `banners_ads` string.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_end.png) |
-| Attribute substring selector | `a[href^="http://example.com/"]`   | Matches all links that are loaded from `http://example.com/` domain.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_attr_start.png) |
-| 属性选择器 | `a[href="http://example.com/"]`   | Matches all links to **exactly** the `http://example.com/` address.<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_attr_equal.png) |
+| ID 选择器 | `#banners`   | 匹配所有 `id` 属性的值等于 `banners` 的元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_id_selector.png) |
+| 类选择器 | `.banners`   | 匹配所有 `class` 属性的值包含 `banners` 的元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_selector.png) |
+| 属性选择器 | `div[class="banners"]`   | 匹配所有 `class` 属性值**完全等于** `banners` 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr.png) |
+| 属性字串选择器 | `div[class^="advert1"]	`   | 匹配所有 `class` 属性值以 `advert1` **开头** 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_start.png) |
+| 属性字串选择器 | `div[class$="banners_ads"]`   | 匹配所有 `class` 属性值以 `advert1` **结尾** 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_end.png) |
+| 属性字串选择器 | `a[href^="http://example.com/"]`   | 匹配所有加载自 `http://example.com/` 的链接。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_attr_start.png) |
+| 属性选择器 | `a[href="http://example.com/"]`   | 匹配所有链接地址 **等于** `http://example.com/` 。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_attr_equal.png) |
 
 <a id="basic-rules"></a>
 ## 基础规则
@@ -250,7 +252,7 @@ The most simple rules are so-called _"Basic rules"._ They are used to block requ
 > Browser detects a blocked request as completed with an error.
 
 <a id="basic-rules-syntax"></a>
-### Basic rules syntax
+### 基础规则的语法
 
 ```
       rule = ["@@"] pattern [ "$" modifiers ]
