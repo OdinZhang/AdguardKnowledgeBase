@@ -110,7 +110,7 @@ visible: true
     * [Selectors debugging mode](#selectors-debugging-mode)
         * [Testing extended selectors](#testing-extended-selectors)
     * [Debugging scriptlets](#debug-scriptlets)
-* [Good luck with creating filters!](#good-luck)
+* [祝你编写过滤器顺利！](#good-luck)
 
 <a id="introduction"></a>
 ## 介绍
@@ -2268,8 +2268,8 @@ The following scriptlets may be used for debug purposes when applied without any
 
 
 <a id="good-luck"></a>
-## Good luck with creating filters!
+## 祝你编写过滤器顺利！
 
-We wish you luck with creating you own ad filters.
+我们希望你编写你自己的过滤器能一切顺利。
 
-If you need an advice on how to create your own filters properly, our forum has a [special section](https://forum.adguard.com/index.php?forums/69/) dedicated to writing your own filtering rules.
+如果你需要如何正确编写过滤器的建议，我们的论坛有一个[特殊板块](https://forum.adguard.com/index.php?forums/69/)致力于编写你自己的过滤器。
