@@ -16,8 +16,8 @@ visible: true
     * [示例：放行网页上的所有东西](#example-unblocking-website)
     * [示例：装饰规则](#example-cosmetic-rule)
 * [基础规则](#basic-rules)
-    * [Basic rules syntax](#basic-rules-syntax)
-    * [Special characters](#basic-rules-special-characters)
+    * [基础规则语法](#basic-rules-syntax)
+    * [特殊字符](#basic-rules-special-characters)
     * [Regular expressions support](#regexp-support)
     * [Wildcard support for TLD](#wildcard-for-tld)
     * [Basic rules examples](#basic-rules-examples)
@@ -223,8 +223,6 @@ visible: true
 
 装饰规则基于每个浏览器都能理解的特殊语言 CSS。最基础的是它可以给网页上将要隐藏的特定元素添加一个 CSS 样式。你可以从[这里](https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Selectors)了解更多 CSS 的知识。
 
-> AdGuard [extends CSS](#extended-css-selectors) and lets filters developers handle much more complicated cases. However, to use these extended rules, you need to be fluent in regular CSS.
-
 > AdGuard [拓展 CSS](#extended-css-selectors)并且可以使过滤器开发者处理更多复杂的情形。但是想要使用这些规则，你必须熟练使用常用的 CSS。
 
 <a id="example-popular-css-selectors"></a>
@@ -243,28 +241,28 @@ visible: true
 <a id="basic-rules"></a>
 ## 基础规则
 
-The most simple rules are so-called _"Basic rules"._ They are used to block requests to specific URLs. Or to unblock it, if there is a special marker "@@" at the beginning of the rule. The basic principle for this type of rules is quite simple: you have to specify the address and additional parameters that limit or expand the scope of the rule.
+最简单的规则被叫做 _“基础规则”_。它们通常用来阻止来自特殊 URL 的请求。如果在规则开头有一个特殊的标记“@@”就是取消阻止它。这种类型的规则的基本原理非常简单：你必须指定地址和额外的参数来限制或扩展规则的范围。
 
-> #### Sub-requests
-> Basic rules for blocking requests are applied only to **sub-requests**. That means they will not block the loading of the page.
+> #### 子请求
+> 阻止请求的基础规则被作用到 **子请求** 上。这意味着它们不会阻止页面的加载。
 
-> #### Response status
-> Browser detects a blocked request as completed with an error.
+> #### 响应状态
+> 浏览器检测到被阻止的请求以一个错误完成。
 
 <a id="basic-rules-syntax"></a>
-### 基础规则的语法
+### 基础规则语法
 
 ```
       rule = ["@@"] pattern [ "$" modifiers ]
 modifiers = [modifier0, modifier1[, ...[, modifierN]]]
 ```
 
-* **`pattern`** — address mask. Every request's URL is collated to this mask. You can also use special characters in the template, their description is [below](#basic-rules-special-characters).
-* **`@@`** — A marker that is used in rules of exception. To turn off filtering for a request, start your rule with this marker.
-* **`modifiers`** — Parameters that "clarify" the basic rule. Some of them limit the scope of the rule and some can completely change they way it works.
+* **`pattern`** — 地址掩码。每一个请求的 URL 都与这个掩码核对。你也可以使用模板里的特殊字符它们的说明[如下](#basic-rules-special-characters)。
+* **`@@`** — 一个例外规则的标记。要想取消阻止你的规则，请使用这个标记作为你规则的开头。
+* **`modifiers`** — “明确”基础规则的参数。一些用来限制规则的范围，一些可以完全改变规则的工作方式。
 
 <a id="basic-rules-special-characters"></a>
-### Special characters
+### 特殊字符
 
 * ```*``` — Wildcard character. It is used to represent "any set of characters". This can also be an empty string or a string of any length.
 * **`||`** — Matching the beginning of an address. With this character you don't have to specify a particular protocol and subdomain in address mask. It means, `||` stands for `http://*.`, `https://*.`, `ws://*.`, `wss://*.` at once.
