@@ -264,12 +264,12 @@ modifiers = [modifier0, modifier1[, ...[, modifierN]]]
 <a id="basic-rules-special-characters"></a>
 ### 特殊字符
 
-* ```*``` — Wildcard character. It is used to represent "any set of characters". This can also be an empty string or a string of any length.
-* **`||`** — Matching the beginning of an address. With this character you don't have to specify a particular protocol and subdomain in address mask. It means, `||` stands for `http://*.`, `https://*.`, `ws://*.`, `wss://*.` at once.
-* **`^`** — Separator character mark. Separator character is any character, but a letter, a digit, or one of the following: `_` `-` `.` `%`. In this example separator characters are shown in bold: `http:`**`//`**`example.com`**`/?`**`t=1`**`&`**`t2=t3`. The end of the address is also accepted as separator.
-* **`|`** — A pointer to the beginning or the end of address. The value depends on the character placement in the mask. For example, a rule `swf|` corresponds to `http://example.com/annoyingflash.swf` , but not to `http://example.com/swf/index.html`. `|http://example.org` corresponds to `http://example.org`, but not to `http://domain.com?url=http://example.org`.
+* ```*``` — 通配符。它用来表示“”任何字符集。它也可以表示一个空字符串或任意长度的字符串。
+* **`||`** — 匹配地址开头。使用这个符号你就不必指定特定的协议和地址掩码中的子域名。也就是说，`||` 一次性代表了 `http://*.`，`https://*.`，`ws://*.`，`wss://*.`。
+* **`^`** — 分隔符。分隔符是除了字母、数字或者`_` `-` `.` `%`以外的任何字符。这个例子中分隔符使用粗体展示：`http:`**`//`**`example.com`**`/?`**`t=1`**`&`**`t2=t3`。地址的结尾同样可以作为一个分隔符。
+* **`|`** — 指向地址开头或者结尾的指针。它的值取决于掩码中字符的位置。比方说，一个规则 `swf|` 对应于 `http://example.com/annoyingflash.swf`，而不是 `http://example.com/swf/index.html`。`|http://example.org` 对应于 `http://example.org`，而不是 `http://domain.com?url=http://example.org`。
 
-> **Visual representation.** We also recommend to get acquainted with [this article](https://adblockplus.org/filter-cheatsheet#blocking), for better understanding of how such rules should be made.
+> **直观表示** 我们同样建议您打开[这篇文章](https://adblockplus.org/filter-cheatsheet#blocking)来更好的理解应该如何编写这样的规则。
 
 <a id="regexp-support"></a>
 ### Regular expressions support
@@ -999,8 +999,8 @@ This is basically an alias to `$redirect` since it has the same "redirection" va
 Examples:
 
 ```
-||example.org/script.js`
-||example.org^$redirect-rule=noopjs`
+||example.org/script.js
+||example.org^$redirect-rule=noopjs
 ```
 
 In this case, only requests to `example.org/script.js` will be "redirected". All other requests to `example.org` will be kept intact.
