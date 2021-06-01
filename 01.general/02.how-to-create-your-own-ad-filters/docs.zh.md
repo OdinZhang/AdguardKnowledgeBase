@@ -18,7 +18,7 @@ visible: true
 * [基础规则](#basic-rules)
     * [基础规则语法](#basic-rules-syntax)
     * [特殊字符](#basic-rules-special-characters)
-    * [Regular expressions support](#regexp-support)
+    * [正则表达式支持](#regexp-support)
     * [Wildcard support for TLD](#wildcard-for-tld)
     * [Basic rules examples](#basic-rules-examples)
     * [Modifiers](#basic-rules-modifiers)
@@ -110,7 +110,7 @@ visible: true
     * [Selectors debugging mode](#selectors-debugging-mode)
         * [Testing extended selectors](#testing-extended-selectors)
     * [Debugging scriptlets](#debug-scriptlets)
-* [祝你编写过滤器顺利！](#good-luck)
+* [祝您编写过滤器顺利！](#good-luck)
 
 <a id="introduction"></a>
 ## 介绍
@@ -221,9 +221,9 @@ visible: true
     <img src="https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/5_cosmetic_rules.svg" />
 </object>
 
-装饰规则基于每个浏览器都能理解的特殊语言 CSS。最基础的是它可以给网页上将要隐藏的特定元素添加一个 CSS 样式。你可以从[这里](https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Selectors)了解更多 CSS 的知识。
+装饰规则基于每个浏览器都能理解的特殊语言 CSS。最基础的是它可以给网页上将要隐藏的特定元素添加一个 CSS 样式。您可以从[这里](https://developer.mozilla.org/zh-CN/docs/Learn/CSS/Building_blocks/Selectors)了解更多 CSS 的知识。
 
-> AdGuard [拓展 CSS](#extended-css-selectors)并且可以使过滤器开发者处理更多复杂的情形。但是想要使用这些规则，你必须熟练使用常用的 CSS。
+> AdGuard [拓展 CSS](#extended-css-selectors)并且可以使过滤器开发者处理更多复杂的情形。但是想要使用这些规则，您必须熟练使用常用的 CSS。
 
 <a id="example-popular-css-selectors"></a>
 #### 常用的 CSS 选择器
@@ -241,7 +241,7 @@ visible: true
 <a id="basic-rules"></a>
 ## 基础规则
 
-最简单的规则被叫做 _“基础规则”_。它们通常用来阻止来自特殊 URL 的请求。如果在规则开头有一个特殊的标记“@@”就是取消阻止它。这种类型的规则的基本原理非常简单：你必须指定地址和额外的参数来限制或扩展规则的范围。
+最简单的规则被叫做 _“基础规则”_。它们通常用来阻止来自特殊 URL 的请求。如果在规则开头有一个特殊的标记“@@”就是取消阻止它。这种类型的规则的基本原理非常简单：您必须指定地址和额外的参数来限制或扩展规则的范围。
 
 > #### 子请求
 > 阻止请求的基础规则被作用到 **子请求** 上。这意味着它们不会阻止页面的加载。
@@ -257,35 +257,35 @@ visible: true
 modifiers = [modifier0, modifier1[, ...[, modifierN]]]
 ```
 
-* **`pattern`** — 地址掩码。每一个请求的 URL 都与这个掩码核对。你也可以使用模板里的特殊字符它们的说明[如下](#basic-rules-special-characters)。
-* **`@@`** — 一个例外规则的标记。要想取消阻止你的规则，请使用这个标记作为你规则的开头。
+* **`pattern`** — 地址掩码。每一个请求的 URL 都与这个掩码核对。您也可以使用模板里的特殊字符它们的说明[如下](#basic-rules-special-characters)。
+* **`@@`** — 一个例外规则的标记。要想取消阻止您的规则，请使用这个标记作为您规则的开头。
 * **`modifiers`** — “明确”基础规则的参数。一些用来限制规则的范围，一些可以完全改变规则的工作方式。
 
 <a id="basic-rules-special-characters"></a>
 ### 特殊字符
 
 * ```*``` — 通配符。它用来表示“”任何字符集。它也可以表示一个空字符串或任意长度的字符串。
-* **`||`** — 匹配地址开头。使用这个符号你就不必指定特定的协议和地址掩码中的子域名。也就是说，`||` 一次性代表了 `http://*.`，`https://*.`，`ws://*.`，`wss://*.`。
+* **`||`** — 匹配地址开头。使用这个符号您就不必指定特定的协议和地址掩码中的子域名。也就是说，`||` 一次性代表了 `http://*.`，`https://*.`，`ws://*.`，`wss://*.`。
 * **`^`** — 分隔符。分隔符是除了字母、数字或者`_` `-` `.` `%`以外的任何字符。这个例子中分隔符使用粗体展示：`http:`**`//`**`example.com`**`/?`**`t=1`**`&`**`t2=t3`。地址的结尾同样可以作为一个分隔符。
 * **`|`** — 指向地址开头或者结尾的指针。它的值取决于掩码中字符的位置。比方说，一个规则 `swf|` 对应于 `http://example.com/annoyingflash.swf`，而不是 `http://example.com/swf/index.html`。`|http://example.org` 对应于 `http://example.org`，而不是 `http://domain.com?url=http://example.org`。
 
 > **直观表示** 我们同样建议您打开[这篇文章](https://adblockplus.org/filter-cheatsheet#blocking)来更好的理解应该如何编写这样的规则。
 
 <a id="regexp-support"></a>
-### Regular expressions support
+### 正则表达式支持
 
-If you want even more flexibility in making rules, you can use [Regular expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions) instead of a default simplified mask with special characters. 
+如果您想更灵活地编写规则，您可以使用[正则表达式](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Regular_Expressions)来代替带有特殊字符的默认简化掩码。
 
-> **Performance.** Rules with regular expressions work more slowly, therefore it is recommended to avoid them or to limit their scope to specific domains.
+> **性能** 使用了正则表达式的规则运行的更慢，因此更简易阻止他们或将他们的作用域限制在特殊的域名下。
 
-If you want a blocker to determine a regular expression, the `pattern` has to look like this:
+如果您想让过滤器使用正则表达式，“模板”应当看起来是这样的：
 ```
 pattern = "/" regexp "/"
 ```
 
-For example, `/banner\d+/$third-party` this rule will apply the regular expression `banner\d+` to all third-party requests. Exclusion rule with regular expression looks like this: `@@/banner\d+/`.
+举例来说，`/banner\d+/$third-party` 这条规则将正则表达式 `banner\d+` 作用到所有的第三方请求。排除使用正则表达式的规则应当是这样的：`@@/banner\d+/`。
 
-> **Compatibility with different versions of AdGuard.** AdGuard browser extension for Safari and AdGuard for iOS do not fully support regular expressions because of [Content Blocking API restrictions](https://webkit.org/blog/3476/content-blockers-first-look/) (look for "The Regular expression format" section).
+> **不同版本 AdGuard 的兼容性** AdGuard 的 Safari 浏览器拓展和 iOS 版 AdGuard 由于[内容组织 API 限制](https://webkit.org/blog/3476/content-blockers-first-look/)并不完整支持正则表达式（请查看“The Regular expression format”章节）。
 
 <a id="wildcard-for-tld"></a>
 ### Wildcard support for TLD (top-level domains)
@@ -2266,8 +2266,8 @@ The following scriptlets may be used for debug purposes when applied without any
 
 
 <a id="good-luck"></a>
-## 祝你编写过滤器顺利！
+## 祝您编写过滤器顺利！
 
-我们希望你编写你自己的过滤器能一切顺利。
+我们希望您编写您自己的过滤器能一切顺利。
 
-如果你需要如何正确编写过滤器的建议，我们的论坛有一个[特殊板块](https://forum.adguard.com/index.php?forums/69/)致力于编写你自己的过滤器。
+如果您需要如何正确编写过滤器的建议，我们的论坛有一个[特殊板块](https://forum.adguard.com/index.php?forums/69/)致力于编写您自己的过滤器。
