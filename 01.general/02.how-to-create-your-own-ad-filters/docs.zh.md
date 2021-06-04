@@ -344,21 +344,21 @@ pattern = "/" regexp "/"
 <a id="third-party-modifier"></a>
 ##### **`third-party`**
 
-A restriction of third-party and own requests. A third-party request is a request from different domain. For example, a request to `example.org`, from `domain.com` is a third-party request. 
+限制第三方和自己的请求。第三方请求是来自不同的域名的请求。比如一个从 `domain.com` 到 `example.org` 的请求就是第三方请求。
 
-> **Subdomains.** Please note that request from domain to it's subdomain (or vice versa) is not considered a third-party request. For example, a request to `subdomain.example.org`, sent from the domain` example.org` is not a third-party request. 
+> **子域名** 请注意从域名到它的子域名的请求（反过来也一样）并不认为是第三方请求。比方说一个从 `example.org` 发送到 `subdomain.example.org` 的请求不是一个第三方请求。
 
-If there is a `third-party` modifier, the rule is only applied to third-party request.
+如果有一个 `third-party` 修饰符，这条规则仅被作用于第三方请求。
 
-###### `third-party` examples
+###### `third-party` 示例
 
-* `||domain.com^$third-party` — rule is applied to all domains, except `domain.com` and it's subdomains. Third-party request 示例： `http://example.org/banner.jpg`.
+* `||domain.com^$third-party` — 规则被作用在除了 `domain.com` 和它的子域名之外的所有域名之上。第三方请求示例： `http://example.org/banner.jpg`.
 
-If there is a `~third-party` modifier, the rule is only applied to the requests that are not from third-party. Which means, they have to be sent from the same domain.
+如果有一个 `~third-party` 修饰符，这条规则将仅作用于没有来自第三方的请求。也就是说，它们必须被同一个域名所发送。
 
-###### `~third-party` examples
+###### `~third-party` 示例
 
-* `||domain.com$~third-party` — this rule is applied to `domain.com`, but not to the other domains. Example of a request that is not a third-party request: `http://domain.com/icon.ico`.
+* `||domain.com$~third-party` — 这条规则作用于 `domain.com` 而不是其他的域名。比如请求 `http://domain.com/icon.ico` 就不是一个第三方请求。
 
 <a id="popup-modifier"></a>
 ##### **`popup`**
@@ -399,51 +399,51 @@ There is a set of modifiers, which can be used to limit the rule's application a
 <a id="image-modifier"></a>
 ##### **`image`**
 
-The rule corresponds to images requests.
+这条规则对应于图像请求。
 
 <a id="stylesheet-modifier"></a>
 ##### **`stylesheet`**
 
-The rule corresponds to CSS files requests.
+这条规则对应于 CSS 文件请求。
 
 <a id="script-modifier"></a>
 ##### **`script`**
 
-The rule corresponds to script requests (e.g. javascript, vbscript).
+这条规则对应于脚本请求（比如 javascript、vbscript）。
 
 <a id="object-modifier"></a>
 ##### **`object`**
 
-The rule corresponds to browser plugins resourses. (e.g. Java or Flash).
+这条规则对应于浏览器插件资源（比如 Java 或 Flash）。
 
 <a id="object-subrequest-modifier"></a>
 ##### **`object-subrequest`**
 
-The rule corresponds to requests by browser plugins (it's usually Flash).
+这条规则对应于浏览器插件的请求（通常是 Flash）。
 
-> **不同版本 AdGuard 的兼容性** AdGuard for Windows, macOS and Android often can't accurately detect this type and defines it as `other`.
+> **不同版本 AdGuard 的兼容性** AdGuard for Windows、macOS 和 Android 通常不能准确侦测这种类型，并且把它定义为 `other`。
 
 <a id="font-modifier"></a>
 ##### **`font`**
 
-The rule corresponds to requests for fonts (e.g. .woff filename extension).
+这条规则对应于字体请求。（例如 .woff 文件拓展名）。
 
 <a id="media-modifier"></a>
 ##### **`media`**
 
-The rule corresponds to requests for media files (music and video, e.g. .mp4 files).
+这条规则对应于媒体文件的请求（音乐和视频，比如 .mp4 文件）。
 
 <a id="subdocument-modifier"></a>
 ##### **`subdocument`**
 
-The rule corresponds to requests for built-in pages (HTML tags `frame` and `iframe`).
+这条规则对应于内置页面的请求（HTML 标签 `frame` 和 `iframe`）。
 
 <a id="ping-modifier"></a>
 ##### **`ping`**
 
-The rule corresponds to requests caused by either `navigator.sendBeacon()` or the `ping` attribute on links.
+这条规则对应于链接属性 `navigator.sendBeacon()` 或 `ping` 所发起的请求。
 
-> **不同版本 AdGuard 的兼容性** AdGuard for Windows, macOS and Android often can't accurately detect `navigator.sendBeacon()`. For reliable detection, use AdGuard browser extensions.
+> **不同版本 AdGuard 的兼容性** AdGuard for Windows、macOS 和 Android 经常不能准确侦测 `navigator.sendBeacon()`。为了更可靠的侦测，请使用 AdGuard 浏览器拓展。
 
 <a id="xmlhttprequest-modifier"></a>
 ##### **`xmlhttprequest`**
