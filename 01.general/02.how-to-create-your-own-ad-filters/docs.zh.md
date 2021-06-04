@@ -21,8 +21,8 @@ visible: true
     * [正则表达式支持](#regexp-support)
     * [TLD 的通配符支持](#wildcard-for-tld)
     * [基础规则示例](#basic-rules-examples)
-    * [Modifiers](#basic-rules-modifiers)
-        * [Basic modifiers](#basic-rules-common-modifiers)
+    * [修饰符](#basic-rules-modifiers)
+        * [基础修饰符](#basic-rules-common-modifiers)
             * [$domain](#domain-modifier)
             * [$third-party](#third-party-modifier)
             * [$popup](#popup-modifier)
@@ -233,7 +233,7 @@ visible: true
 | ID 选择器 | `#banners`   | 匹配所有 `id` 属性的值等于 `banners` 的元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_id_selector.png) |
 | 类选择器 | `.banners`   | 匹配所有 `class` 属性的值包含 `banners` 的元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_selector.png) |
 | 属性选择器 | `div[class="banners"]`   | 匹配所有 `class` 属性值**完全等于** `banners` 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr.png) |
-| 属性字串选择器 | `div[class^="advert1"]	`   | 匹配所有 `class` 属性值以 `advert1` **开头** 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_start.png) |
+| 属性字串选择器 | `div[class^="advert1"]`   | 匹配所有 `class` 属性值以 `advert1` **开头** 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_start.png) |
 | 属性字串选择器 | `div[class$="banners_ads"]`   | 匹配所有 `class` 属性值以 `advert1` **结尾** 的 `div` 元素。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_class_attr_end.png) |
 | 属性字串选择器 | `a[href^="http://example.com/"]`   | 匹配所有加载自 `http://example.com/` 的链接。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_attr_start.png) |
 | 属性选择器 | `a[href="http://example.com/"]`   | 匹配所有链接地址 **等于** `http://example.com/` 。<br/>![](https://cdn.adguard.com/public/Adguard/kb/en/rules_syntax/css_attr_equal.png) |
@@ -306,40 +306,40 @@ pattern = "/" regexp "/"
 * `@@||example.com$document` — 一般的例外规则。它完全取消过滤 `example.com` 和所有子域名。有许多可以使用在例外规则上的修饰符。想要了解更多，请点击[下方](#exceptions-modifiers)的链接。
 
 <a id="basic-rules-modifiers"></a>
-### Modifiers
+### 修饰符
 
-> **Attention!** The features described in this section are intended for experienced users. They extend capabilities of "Basic rules", but in order to use them you need to have a basic undestanding of the way your browser works.
+> **注意！** 这个小节所描述的特性是给有经验的用户准备的。它们拓展了“基础规则的能力”，但是为了使用它们您需要对您的浏览器的工作方式有基本的了解。
 
-You can change the behavior of a "basic rule" by using additional modifiers. Modifiers should be located in the end of the rule after a `$` sign and be separated by commas.
+您可以使用额外的修饰符来改变“基础规则”的行为。修饰符应当被放在规则末尾的“$符号后面并且用英文逗号分隔。
 
-Example:
+示例：
 ```
 ||domain.com^$popup,third-party
 ```
 
 <a id="basic-rules-common-modifiers"></a>
-#### Basic modifiers
+#### 基础修饰符
 
-The following modifiers are the most simple and frequently used.
+下面的修饰符是最简单而且最常用的。
 
 <a id="domain-modifier"></a>
 ##### **`domain`**
 
-`domain` limits the rule application area to a list of domains (and their subdomains). To add multiple domains to one rule, use the `|`  character as a separator.
+`domain` 将规则的应用范围限制在一组域名（和它们的子域名）里。为了在一个规则里增加多个域名，使用 `|` 作为分隔符。
 
-###### `domain` examples 
+###### `domain` 示例 
 
-* `||baddomain.com^$domain=example.org` — a rule to block requests that match the specified mask, and are sent from domain `example.org` or its subdomains.
-* `||baddomain.com^$domain=example.org|example.com` — the same rule, but it works for both `example.org` and `example.com`.
+* `||baddomain.com^$domain=example.org` — 一个阻止与指定的掩码匹配并且从域名 `example.org` 或它的子域名发送的请求的规则。
+* `||baddomain.com^$domain=example.org|example.com` — 同样的规则，但是它同时适用于 `example.org` 和 `example.com`。
 
-If you want the rule not to be applied to certain domains, start a domain name with `~` sign.
+如果你不想让规则作用在某个域名上，使用 `~` 作为域名的开头。
 
-###### `domain` and `~` examples
+###### `domain` 和 `~` 示例
 
-* `||baddomain.com^$domain=~example.org` — a rule to block requests that match the specified mask, and are sent from any domain except `example.org` or it's subdomains.
-* `||baddomain.com^$domain=example.org|~foo.example.org` — this rule blocks requests that are sent from `example.org` and all it's subdomains, except the subdomain `foo.example.org`.
+* `||baddomain.com^$domain=~example.org` — 一个阻止与指定的掩码匹配并且从任何域名除了 `example.org` 或它的子域名发送的请求的规则。
+* `||baddomain.com^$domain=example.org|~foo.example.org` — 这个规则阻止了发送自 `example.org` 和它除 `foo.example.org` 之外所有的子域名的请求。
 
-> **Important!** Safari doesn't support both permitted and restricted domains. So the rules like `||baddomain.com^$domain=example.org|~foo.example.org` are invalid in AdGuard for Safari.
+> **重要！** Safari 并不同时支持允许和限制域名。因此像 `||baddomain.com^$domain=example.org|~foo.example.org` 的队则在 AdGuard for Safari 里是无效的。
 
 <a id="third-party-modifier"></a>
 ##### **`third-party`**
@@ -352,7 +352,7 @@ If there is a `third-party` modifier, the rule is only applied to third-party re
 
 ###### `third-party` examples
 
-* `||domain.com^$third-party` — rule is applied to all domains, except `domain.com` and it's subdomains. Third-party request example: `http://example.org/banner.jpg`.
+* `||domain.com^$third-party` — rule is applied to all domains, except `domain.com` and it's subdomains. Third-party request 示例： `http://example.org/banner.jpg`.
 
 If there is a `~third-party` modifier, the rule is only applied to the requests that are not from third-party. Which means, they have to be sent from the same domain.
 
@@ -1147,11 +1147,11 @@ domains = [domain0, domain1[, ...[, domainN]]]
 * **`selector`** — [CSS selector](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_Started/Selectors), defines the elements to be hidden.
 * **`domains`** — domain restriction for the rule.
 
-If you want to limit the rule application area to certain domains, just enter them separated with commas. For example: `example.org,example.com##selector`.
+If you want to limit the rule application area to certain domains, just enter them separated with commas. For 示例： `example.org,example.com##selector`.
 
 > Please note that this rule will be also applied to all subdomains of `example.org` and `example.com`.
 
-If you want the rule not to be applied to certain domains, start a domain name with `~` sign. For example:
+If you want the rule not to be applied to certain domains, start a domain name with `~` sign. For 示例：
 `~example.org##selector`.
 
 You can use both approaches in a single rule. For example, `example.org,~subdomain.example.org##domain` will work for `example.org` and all subdomains, **except `subdomain.example.org`**.
@@ -1551,6 +1551,7 @@ div:matches-property("memoizedProps._owner.src"="/ad/")
   To check properties of specific element, do:
   1. Select the element on the page.
   2. Go to Console tab and run `console.dir($0)`.
+  
 </details>
 
 <a id="extended-css-xpath"></a>
@@ -1741,7 +1742,7 @@ This special attribute works almost like `tag-content` and allows you to check t
 > You should use `""` to escape `"`, for instance:
 > `$$script[wildcard=""banner""]`
 
-For example:
+For 示例：
 `$$script[wildcard="*banner*text*"]`
 
 It will check, if the element's code contains two consecutive substrings `banner` and `text`.
@@ -1753,7 +1754,7 @@ Specifies the maximum length for content of HTML element. If this parameter is s
 
 > **Default value.** If this parameter is not specified, the `max-length` is considered to be 8192.
 
-For example:
+For 示例：
 ```
 $$div[tag-content="banner"][max-length="400"]
 ```
@@ -1764,7 +1765,7 @@ This rule will remove all the `div` elements, whose code contains the substring`
 
 Specifies the minimum length for content of HTML element. If this parameter is set and the content length is less than preset value - a rule does not apply to the element.
 
-For example:
+For 示例：
 ```
 $$div[tag-content="banner"][min-length="400"]
 ```
@@ -1889,7 +1890,7 @@ modifiers = modifier0[, modifier1[, ...[, modifierN]]]
 * `modifier` - set of the modifiers described below.
 * `rule text` - a rule to be modified.
 
-For example: `[$domain=example.com,app=test_app]##selector`.
+For 示例： `[$domain=example.com,app=test_app]##selector`.
 
 In the modifiers values of the following characters must be escaped: `[`, `]`, `,`, and `\` (unless
 it's used for the escaping). Use `\` to escape them. For example, an escaped bracket looks like
@@ -2135,27 +2136,27 @@ Eventually, here are the two versions of the Base filter for AdGuard browser ext
 Specify which platforms can apply this rule. List of existing platforms:
 
 
-* windows - Example: English filter for Windows - [https://filters.adtidy.org/windows/filters/2.txt](https://filters.adtidy.org/windows/filters/2.txt)
+* windows - 示例： English filter for Windows - [https://filters.adtidy.org/windows/filters/2.txt](https://filters.adtidy.org/windows/filters/2.txt)
 
-* mac - Example: English filter for Mac - [https://filters.adtidy.org/mac_v2/filters/2.txt](https://filters.adtidy.org/mac_v2/filters/2.txt)
+* mac - 示例： English filter for Mac - [https://filters.adtidy.org/mac_v2/filters/2.txt](https://filters.adtidy.org/mac_v2/filters/2.txt)
 
-* android - Example: English filter for Android - [https://filters.adtidy.org/android/filters/2.txt](https://filters.adtidy.org/android/filters/2.txt)
+* android - 示例： English filter for Android - [https://filters.adtidy.org/android/filters/2.txt](https://filters.adtidy.org/android/filters/2.txt)
 
-* ios - Example: English filter for iOS - [https://filters.adtidy.org/ios/filters/2.txt](https://filters.adtidy.org/ios/filters/2.txt)
+* ios - 示例： English filter for iOS - [https://filters.adtidy.org/ios/filters/2.txt](https://filters.adtidy.org/ios/filters/2.txt)
 
-* ext_chromium - Example: AdGuard browser extension for Chrome - [https://filters.adtidy.org/extension/chromium/filters/2.txt](https://filters.adtidy.org/extension/chromium/filters/2.txt)
+* ext_chromium - 示例： AdGuard browser extension for Chrome - [https://filters.adtidy.org/extension/chromium/filters/2.txt](https://filters.adtidy.org/extension/chromium/filters/2.txt)
 
-* ext_ff - Example: AdGuard browser extension for Firefox - [https://filters.adtidy.org/extension/firefox/filters/2.txt](https://filters.adtidy.org/extension/firefox/filters/2.txt)
+* ext_ff - 示例： AdGuard browser extension for Firefox - [https://filters.adtidy.org/extension/firefox/filters/2.txt](https://filters.adtidy.org/extension/firefox/filters/2.txt)
 
-* ext_edge - Example: AdGuard browser extension for Edge - [https://filters.adtidy.org/extension/edge/filters/2.txt](https://filters.adtidy.org/extension/edge/filters/2.txt)
+* ext_edge - 示例： AdGuard browser extension for Edge - [https://filters.adtidy.org/extension/edge/filters/2.txt](https://filters.adtidy.org/extension/edge/filters/2.txt)
 
-* ext_opera - Example: AdGuard browser extension for Opera - [https://filters.adtidy.org/extension/opera/filters/2.txt](https://filters.adtidy.org/extension/opera/filters/2.txt)
+* ext_opera - 示例： AdGuard browser extension for Opera - [https://filters.adtidy.org/extension/opera/filters/2.txt](https://filters.adtidy.org/extension/opera/filters/2.txt)
 
-* ext_ublock - Example: uBlock Origin - [https://filters.adtidy.org/extension/ublock/filters/2.txt](https://filters.adtidy.org/extension/ublock/filters/2.txt)
+* ext_ublock - 示例： uBlock Origin - [https://filters.adtidy.org/extension/ublock/filters/2.txt](https://filters.adtidy.org/extension/ublock/filters/2.txt)
 
-* ext_safari - Example: AdGuard browser extension for Safari - [https://filters.adtidy.org/extension/safari/filters/2.txt](https://filters.adtidy.org/extension/safari/filters/2.txt)
+* ext_safari - 示例： AdGuard browser extension for Safari - [https://filters.adtidy.org/extension/safari/filters/2.txt](https://filters.adtidy.org/extension/safari/filters/2.txt)
 
-* ext_android_cb - Example: AdGuard Content Blocker - [https://filters.adtidy.org/extension/android-content-blocker/filters/2.txt](https://filters.adtidy.org/extension/android-content-blocker/filters/2.txt)
+* ext_android_cb - 示例： AdGuard Content Blocker - [https://filters.adtidy.org/extension/android-content-blocker/filters/2.txt](https://filters.adtidy.org/extension/android-content-blocker/filters/2.txt)
 
 Examples:
 
