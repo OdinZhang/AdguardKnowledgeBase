@@ -371,15 +371,43 @@ In the following examples it's implied that requests are sent from `http://examp
 
 > **Important!** Safari doesn't support the simultaneous use of allowed and disallowed domains, so rules like `||baddomain.com^$domain=example.org|~foo.example.org` will not work in AdGuard for Safari.
 
+###### `domain` modifier matching target domain
+
+In some cases the `$domain` modifier can match not only the referrer domain, but also the target domain. This happens when all of the following is true:
+
+1) The request has `document` type
+2) The rule's pattern doesn't match any particular domain(s)
+3) The rule's pattern doesn't contain regular expressions
+
+When all these conditions are met, the `domain` modifier will match both the referrer doman **and** the target domain.
+
+If some of the conditions above aren't met but the rule contains modifiers `cookie` or `csp`, the target domain will still be matched.
+
+If the referrer matches a rule with `domain` that explicitly excludes the referrer domain, then the rule won't be applied even if the target domain also matches the rule. This affects rules with `cookie` and `csp` modifiers, too.
+
+**Examples:**
+
+* `*$cookie,domain=example.org|example.com` will block cookies for all requests to and from `example.org` and `example.com`.
+* `*$document,domain=example.org|example.com` will block all requests to and from `example.org` and `example.com`.
+
+In the following examples it's implied that requests are sent from `http://example.org/page`(the referrer) and the target URL is `http://targetdomain.com/page`.
+
+* `page$domain=example.org` will be matched, as it matches the referrer domain.
+* `page$domain=targetdomain.com` will be matched, as it matches the target domain but satisfies all requirements mentioned above.
+* `||*page$domain=targetdomain.com` will not be matched, as the pattern `||*page` matches specific domains.
+* `||*page$domain=targetdomain.com,cookie` will be matched despite the pattern `||*page` matches specific domains because it contains `$cookie` modifier. 
+* `/banner\d+/$domain=targetdomain.com` will not be matched as it contains a regular expression.
+* `page$domain=targetdomain.com|~example.org` will not be matched because the referrer domain is explicitly excluded.
+
+> **Important!** Safari doesn't support the simultaneous use of allowed and disallowed domains, so rules like `||baddomain.com^$domain=example.org|~foo.example.org` will not work in AdGuard for Safari.
+
 
 <a id="third-party-modifier"></a>
 ##### **`third-party`**
 
 A restriction of third-party and own requests. A third-party request is a request from a different domain. For example, a request to `example.org`, from `domain.com` is a third-party request.
 
-> To be considered as such, a third-party request should meet one of the following conditions:
-> 1) Its referrer is not a subdomain of the target domain or the other way round.  For example, a request to `subdomain.example.org` from `example.org` is not a third-party request.
-> 2) Its `Sec-Fetch-Site` header is set to `cross-site`.
+> **Subdomains.** Please note that request from domain to it's subdomain (or vice versa) is not considered a third-party request. For example, a request to `subdomain.example.org`, sent from the domain `example.org` is not a third-party request. 
 
 If there is a `third-party` modifier, the rule is only applied to third-party requests.
 
@@ -657,8 +685,6 @@ These modifiers are able to completely change the behaviour of basic rules.
 
 Rules with `$removeparam` modifier are intended to to strip query parameters from requests' URLs. Please note that such rules are only applied to `GET`, `HEAD`, and `OPTIONS` requests.
 
-> `$removeparam` rules that do not have any content-type modifiers will match only requests where content type is `document`.
-
 ##### Syntax
 
 ###### Basic syntax
@@ -806,7 +832,7 @@ Rules with `$badfilter` modifier can disable other basic rules for specific doma
 * The rule has a `$domain` modifier
 * The rule does not have a negated domain `~` in `$domain` modifier's value.
 
-In that case, the `$badfilter` rule will disable the corresponding rule for domains specified in both the `$badfilter` and basic rules. Please note, that [wildcard-TLD logic](https://kb.adguard.com/en/general/how-to-create-your-own-ad-filters#wildcard-for-tld) works here as well.
+In that case, the `$badfilter` rule will disable the corresponding rule for domains specified in both the `$badfilter` and basic rules. Please note, that [wildcard-TLD logic](https://kb.adguard.com/en/general/how-to-create-your-own-ad-filters#wildcard-for-tld) works here as well. 
 
 **Examples:**
 
@@ -1082,7 +1108,7 @@ In this case, only requests to `example.org/script.js` will be "redirected". All
 Adding this modifier to a rule is equivalent to excluding the domains by the rule's matching pattern or to adding the corresponding exclusion rules. To add multiple domains to one rule, use the `|`  character as a separator.
 
 Please note that rules with the `$denyallow` modifier have the following restrictions:
-
+ 
 * the rule's matching pattern cannot target any specific domain(s) (e.g., it can't start with `||`)
 * domains in the modifier's parameter cannot be negated (e.g. `$denyallow=~x.com`) or have a wildcard TLD (e.g. `$denyallow=x.*`)
 

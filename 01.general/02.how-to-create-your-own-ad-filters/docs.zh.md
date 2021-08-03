@@ -67,6 +67,7 @@ visible: true
         * [$app](#app-modifier)
         * [$redirect](#redirect-modifier)
         * [$redirect-rule](#redirect-rule-modifier)
+        * [$denyallow](#denyallow-modifier)
         * [noop](#noop-modifier)
         * [$removeheader](#removeheader-modifier)
 * [Non-basic rules](#non-basic-rules)
@@ -339,7 +340,36 @@ pattern = "/" regexp "/"
 * `||baddomain.com^$domain=~example.org` — 一个阻止与指定的掩码匹配并且从任何域名除了 `example.org` 或它的子域名发送的请求的规则。
 * `||baddomain.com^$domain=example.org|~foo.example.org` — 这个规则阻止了发送自 `example.org` 和它除 `foo.example.org` 之外所有的子域名的请求。
 
-> **重要！** Safari 并不同时支持允许和限制域名。因此像 `||baddomain.com^$domain=example.org|~foo.example.org` 的队则在 AdGuard for Safari 里是无效的。
+###### `domain` 修饰符匹配目标域名
+
+在某些情况下 `$domain` 修饰符可以匹配来源域名和目标域名。它在下列条件为真时将发生：
+
+1) 情求具有 `document` 类型
+2) 规则模式并不匹配任何特定的域名
+3) 规则模式并不包含正则表达式
+
+当所有的条件均满足时，`domain` 修饰符将匹配来源域名**和**目标域名。
+
+当部分条件没有满足但是规则包含了修饰符 `cookie` 或 `csp`，目标域名仍能匹配到。
+
+如果来源页面匹配带有 `domain` 修饰符并明确排除来源域名，这时规则将不会被应用即使目标域名也匹配了规则。这也会影响带有 `cookie` 和 `csp` 修饰符的规则。
+
+**示例：**
+
+* `*$cookie,domain=example.org|example.com` 将阻止所有来自和到 `example.org` 和 `example.com`的请求的 cookies。
+* `*$document,domain=example.org|example.com` 将阻止所有来自和到 `example.org` 和 `example.com`的请求。
+
+<!-- TODO 这里也需要翻译 -->
+下面的例子中暗示了从 `http://example.org/page`（来源页面）发送的请求，目标页面为 `http://targetdomain.com/page`。
+
+* `page$domain=example.org` 当来源域名匹配时将会被匹配。
+* `page$domain=targetdomain.com` 当它匹配目标域名但满足上述所有要求时会被匹配。will be matched, as it matches the target domain but satisfies all requirements mentioned above.
+* `||*page$domain=targetdomain.com` will not be matched, as the pattern `||*page` matches specific domains.
+* `||*page$domain=targetdomain.com,cookie` will be matched despite the pattern `||*page` matches specific domains because it contains `$cookie` modifier. 
+* `/banner\d+/$domain=targetdomain.com` will not be matched as it contains a regular expression.
+* `page$domain=targetdomain.com|~example.org` will not be matched because the referrer domain is explicitly excluded.
+
+> **重要！** Safari 并不同时支持允许和限制域名。因此像 `||baddomain.com^$domain=example.org|~foo.example.org` 的规则在 AdGuard for Safari 里是不工作的。
 
 <a id="third-party-modifier"></a>
 ##### **`third-party`**
@@ -360,6 +390,7 @@ pattern = "/" regexp "/"
 
 * `||domain.com$~third-party` — 这条规则作用于 `domain.com` 而不是其他的域名。比如请求 `http://domain.com/icon.ico` 就不是一个第三方请求。
 
+<!-- TODO 从这里开始翻译 -->
 <a id="popup-modifier"></a>
 ##### **`popup`**
 
@@ -497,7 +528,7 @@ Disables any cosmetic rules on the pages matching the rule. You will find the in
 <a id="content-modifier"></a>
 ##### **`content`**
 
-Disables HTML filtering rules on the pages matching the rule. You will find the information about HTML filtering rules [further](#html-filtering-rules).
+Disables HTML filtering rules and replace rules on the pages that match the rule. You will find the information about HTML filtering rules [here](#html-filtering-rules) and about replace rules [here](#replace-modifier).
 
 ###### `content` example
 
@@ -611,7 +642,7 @@ These modifiers are able to completely change the behaviour of basic rules.
 
 >`$removeparam` and `$queryprune` are completely interchangeable and are aliases to each other.
 
-Rules with `$removeparam` modifier are intended to to strip query parameters from pages’ URLs. Please note that such rules are only applied to `GET`, `HEAD`, and `OPTIONS` requests.
+Rules with `$removeparam` modifier are intended to to strip query parameters from requests' URLs. Please note that such rules are only applied to `GET`, `HEAD`, and `OPTIONS` requests.
 
 ##### Syntax
 
@@ -667,6 +698,13 @@ Use `@@` to negate `$removeparam`:
 
 ##### Examples
 
+```
+$removeparam=utm_source|utm_medium|utm_term
+$removeparam=utm_content|utm_campaign|utm_referrer
+@@||example.com^$removeparam
+```
+With these rules some [UTM parameters](https://en.wikipedia.org/wiki/UTM_parameters) will be stripped out from any request, except that requests to `example.com` won't be stripped at all, e.g. `http://google.com/page?utm_source=s&utm_referrer=fb.com&utm_content=img` will be transformed to `http://google.com/page`, but `http://example.com/page?utm_source=s&utm_referrer=fb.com&utm_content=img` won't be affected by the blocking rule.
+
 * `$removeparam=utm_source` -- removes `utm_source` query parameter from all requests.
 
 * `$removeparam=/utm_.*/` -- removes all `utm_* query` parameters from URL queries of any request, e.g. a request to `http://example.com/page?utm_source=test` will be transformed to `http://example.com/page`.
@@ -694,7 +732,7 @@ $removeparam=/^(utm_content|utm_campaign|utm_referrer)=/
 With these rules, specified UTM parameters will be removed from any request save for requests to example.org.
 
 > **Compatibility with other modifiers**
-> `$removeparam` rules are not compatible with any other modifiers except `$domain`, `$third-party`, `$app`, `$important` and `$match-case`. The rules which have any other modifiers are considered invalid and will be discarded.
+> `$removeparam` rules are compatible with [basic modifiers](#basic-rules-common-modifiers), [content-type modifiers](#content-type-modifiers), and with `$important` and `$app` modifiers. The rules which have any other modifiers are considered invalid and will be discarded.
 
 > Please note that `$removeparam` rules can also be disabled by `$document` and `$urlblock` exception rules. But basic exception rules without modifiers don't do that. For example, `@@||example.com^` will not disable `$removeparam=p` for requests to **example.com**, but `@@||example.com^$urlblock` will.
 
@@ -741,12 +779,28 @@ If a request to `example.org` is sent from the `test.org` domain, the rule won't
 
 The rules with the `badfilter` modifier disable other basic rules to which they refer. It means that the text of the disabled rule should match the text of the `badfilter` rule (without the `badfilter` modifier).
 
-##### `badfilter` examples
+**Examples:**
 
 * `||example.com$badfilter` disables `||example.com`
 * `||example.com$image,badfilter` disables `||example.com,image`
 * `@@||example.com$badfilter` disables `@@||example.com`
 * `||example.com$domain=domain.com,badfilter` disables `||example.com$domain=domain.com`
+
+Rules with `$badfilter` modifier can disable other basic rules for specific domains if they fulfil the following conditions:
+
+* The rule has a `$domain` modifier
+* The rule does not have a negated domain `~` in `$domain` modifier's value.
+
+In that case, the `$badfilter` rule will disable the corresponding rule for domains specified in both the `$badfilter` and basic rules. Please note, that [wildcard-TLD logic](https://kb.adguard.com/en/general/how-to-create-your-own-ad-filters#wildcard-for-tld) works here as well. 
+
+**Examples:**
+
+* `/some$domain=example.com|example.org|example.io` is disabled for `example.com` by `/some$domain=example.com,badfilter`
+* `/some$domain=example.com|example.org|example.io` is disabled for `example.com` and `example.org` by `/some$domain=example.com|example.org,badfilter`
+* `/some$domain=example.com|example.org` and `/some$domain=example.io` are disabled completely by `/some$domain=example.com|example.org|example.io,badfilter`
+* `/some$domain=example.com|example.org|example.io` is disabled completely by `/some$domain=example.*,badfilter`
+* `/some$domain=example.*` is disabled for `example.com` and `example.org` by `/some$domain=example.com|example.org,badfilter`
+* `/some$domain=example.com|example.org|example.io` is NOT disabled for `example.com` by `/some$domain=example.com|~example.org,badfilter` because the value of `domain` modifier contains a negated domain
 
 <a id="empty-modifier"></a>
 #### **`empty`**
@@ -914,7 +968,7 @@ This is basically a Firewall-kind of rules allowing to fully block or unblock ac
 
 1. `$network` rules match **IP addresses only**! You cannot use it to block or unblock access to a domain.
 2. To match an IPv6 address, you have to use the collapsed syntax, e.g. use `[2001:4860:4860::8888]$network` instead of `[2001:4860:4860:0:0:0:0:8888]$network`.
-3. A whitelist `$network` rule makes AdGuard bypass data to the matching endpoint, e.g. there will be no further filtering at all.
+3. A allowlist `$network` rule makes AdGuard bypass data to the matching endpoint, e.g. there will be no further filtering at all.
 
 ##### `network` examples
 
@@ -953,6 +1007,7 @@ If you want the rule not to be applied to certain apps, start the app name with 
 > **不同版本 AdGuard 的兼容性** Only AdGuard for Windows, Mac, Android are technically capable of using this type of rules.
 
 <a id="redirect-modifier"></a>
+
 #### **`redirect`**
 
 AdGuard is able to redirect web requests to a local "resource".
@@ -965,7 +1020,7 @@ AdGuard uses the same filtering rules syntax as uBlock Origin. Also, it is compa
 
 > The value of the `$redirect` modifier must be the name of the resource that will be used for redirection.
 
-> `$redirect` rules' priority is higher than the regular basic blocking rules' priority. This means that if there's a basic blocking rule (even with `$important` modifier), `$redirect` rule will prevail over it. If there's a whitelist (`@@`) rule matching the same URL, it will disable redirecting as well (unless the `$redirect` rule is also marked as `$important`).
+> `$redirect` rules' priority is higher than the regular basic blocking rules' priority. This means that if there's a basic blocking rule (even with `$important` modifier), `$redirect` rule will prevail over it. If there's an allowlist (`@@`) rule matching the same URL, it will disable redirecting as well (unless the `$redirect` rule is also marked as `$important`).
 
 ##### Disabling `$redirect` rules
 
@@ -1004,6 +1059,43 @@ Examples:
 ```
 
 In this case, only requests to `example.org/script.js` will be "redirected". All other requests to `example.org` will be kept intact.
+
+<a id="denyallow-modifier"></a>
+
+#### **`denyallow`**
+
+`denyallow` modifier allows to avoid creating additional rules when it is needed to disable a certain rule for a specific domain(s). `denyallow` matches only target domains and not referrer domains.
+
+Adding this modifier to a rule is equivalent to excluding the domains by the rule's matching pattern or to adding the corresponding exclusion rules. To add multiple domains to one rule, use the `|`  character as a separator.
+
+Please note that rules with the `$denyallow` modifier have the following restrictions:
+ 
+* the rule's matching pattern cannot target any specific domain(s) (e.g., it can't start with `||`)
+* domains in the modifier's parameter cannot be negated (e.g. `$denyallow=~x.com`) or have a wildcard TLD (e.g. `$denyallow=x.*`)
+
+The rules which violate these restrictions are considered invalid.
+
+**Example:**
+
+This rule:
+
+```
+*$script,domain=a.com|b.com,denyallow=x.com|y.com
+```
+
+is equivalent to this one:
+
+```
+/^(?!.*(x.com|y.com)).*$/$script,domain=a.com|b.com
+```
+
+or to these three:
+
+```
+*$script,domain=a.com|b.com
+@@||x.com$script,domain=a.com|b.com
+@@||y.com$script,domain=a.com|b.com
+```
 
 <a id="noop-modifier"></a>
 #### **`noop`**
@@ -1117,7 +1209,6 @@ Use `@@` to negate `$removeheader`:
     ```
 
 > **不同版本 AdGuard 的兼容性** Available in **Developer builds only at this moment.**
-
 
 <a id="non-basic-rules"></a>
 # Non-basic rules
@@ -1961,6 +2052,8 @@ The `!#include` directive allows to include contents of a specified file into th
 ```
 - `file_path` — same origin absolute or relative file path to be included
 
+> The files must originate from the same domain but may be located in a different folder.
+
 > If included file is not found or unavailable, the whole filter update should fail.
 
 > Same-origin limitation should be disabled for local custom filters.
@@ -2070,7 +2163,7 @@ example.org#@#.adBanner
 !#safari_cb_affinity
 ```
 ```
-! to whitelist basic rule from AdGuard Tracking Protection filter filter:
+! to allowlist basic rule from AdGuard Tracking Protection filter filter:
 !#safari_cb_affinity(privacy)
 @@||example.org^
 !#safari_cb_affinity
