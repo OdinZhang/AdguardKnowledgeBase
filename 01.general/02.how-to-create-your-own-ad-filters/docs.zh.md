@@ -344,7 +344,7 @@ pattern = "/" regexp "/"
 
 在某些情况下 `$domain` 修饰符可以匹配来源域名和目标域名。它在下列条件为真时将发生：
 
-1) 情求具有 `document` 类型
+1) 请求具有 `document` 类型
 2) 规则模式并不匹配任何特定的域名
 3) 规则模式并不包含正则表达式
 
@@ -359,15 +359,14 @@ pattern = "/" regexp "/"
 * `*$cookie,domain=example.org|example.com` 将阻止所有来自和到 `example.org` 和 `example.com`的请求的 cookies。
 * `*$document,domain=example.org|example.com` 将阻止所有来自和到 `example.org` 和 `example.com`的请求。
 
-<!-- TODO 这里也需要翻译 -->
 下面的例子中暗示了从 `http://example.org/page`（来源页面）发送的请求，目标页面为 `http://targetdomain.com/page`。
 
 * `page$domain=example.org` 当来源域名匹配时将会被匹配。
-* `page$domain=targetdomain.com` 当它匹配目标域名但满足上述所有要求时会被匹配。will be matched, as it matches the target domain but satisfies all requirements mentioned above.
-* `||*page$domain=targetdomain.com` will not be matched, as the pattern `||*page` matches specific domains.
-* `||*page$domain=targetdomain.com,cookie` will be matched despite the pattern `||*page` matches specific domains because it contains `$cookie` modifier. 
-* `/banner\d+/$domain=targetdomain.com` will not be matched as it contains a regular expression.
-* `page$domain=targetdomain.com|~example.org` will not be matched because the referrer domain is explicitly excluded.
+* `page$domain=targetdomain.com` 当它匹配目标域名但满足上述所有要求时会被匹配。
+* `||*page$domain=targetdomain.com` 当 `||*page` 匹配到指定的域名时不会被匹配。
+* `||*page$domain=targetdomain.com,cookie` 尽管 `||*page` 匹配到指定的域名也会被匹配，因为它包含 `$cookie` 修饰符。
+* `/banner\d+/$domain=targetdomain.com` 当其包含了正则表达式时不会被匹配。
+* `page$domain=targetdomain.com|~example.org` 不会被匹配因为来源域名被明确排除。
 
 > **重要！** Safari 并不同时支持允许和限制域名。因此像 `||baddomain.com^$domain=example.org|~foo.example.org` 的规则在 AdGuard for Safari 里是不工作的。
 
