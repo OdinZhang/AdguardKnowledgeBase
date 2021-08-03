@@ -422,9 +422,9 @@ There is a set of modifiers, which can be used to limit the rule's application a
 <a id="content-type-modifiers-examples"></a>
 ##### Content type modifiers examples
 
-* `||example.org^$image` — corresponds to all images from `example.org`.
-* `||example.org^$script,stylesheet` — corresponds to all the scripts and styles from `example.org`.
-* `||example.org^$~image,~script,~stylesheet` — corresponds to all requests to `example.org` except for the images, scripts and styles.
+* `||example.org^$image` — 对应所有来自 `example.org` 的图片。
+* `||example.org^$script,stylesheet` — 对应所有来自 `example.org` 的脚本和样式。
+* `||example.org^$~image,~script,~stylesheet` — 对应所有除了图片、脚本和样式以外来自 `example.org` 的请求。
 
 <a id="image-modifier"></a>
 ##### **`image`**
@@ -478,35 +478,35 @@ There is a set of modifiers, which can be used to limit the rule's application a
 <a id="xmlhttprequest-modifier"></a>
 ##### **`xmlhttprequest`**
 
-The rule applies only to ajax requests (requests sent via javascript object `XMLHttpRequest`).
+这条规则仅应用于 ajax 请求（请求通过 javascript 对象 `XMLHttpRequest` 发送）。
 
-> **不同版本 AdGuard 的兼容性** AdGuard for Windows, macOS and Android often can't accurately detect this type and sometimes detects it as `other` or `script`.
+> **不同版本 AdGuard 的兼容性** AdGuard for Windows, macOS 和 Android 经常不能准确侦测到这种类型，有时被侦测为 `other` 或 `script`。
 
 <a id="websocket-modifier"></a>
 ##### **`websocket`**
 
-The rule applies only to WebSocket connections.
+这条规则仅应用于 WebSocket 连接。
 
-> **不同版本 AdGuard 的兼容性** AdGuard for Safari and iOS cannot properly apply this modifier due to Safari limitations.
+> **不同版本 AdGuard 的兼容性** AdGuard for Safari 和 iOS 由于 Safari 的限制不能很好地应用这个修饰符。
 
 <a id="webrtc-modifier"></a>
 ##### **`webrtc`**
 
-The rule applies only to WebRTC connections.
+这条规则仅应用于 WebRTC 连接。
 
-> Please note that blocking WebRTC can interfere with the work of some browser applications, such as messengers, chats, cinemas, or games.
+> 请注意，阻止 WebRTC 会干扰某些浏览器应用程序的工作，例如信息、聊天、视频或游戏。
 
 ###### `webrtc` example
 
-* `||example.com^$webrtc,domain=example.org` - this rule blocks webRTC connectios to `example.com` for `example.org`.
-* `@@*$webrtc,domain=example.org` - this rule disables the RTC wrapper for `example.org`.
+* `||example.com^$webrtc,domain=example.org` - 此规则会阻止连接 `example.com` 和 `example.org` 的 webRTC。
+* `@@*$webrtc,domain=example.org` - 此规则禁用了 `example.org`的 RTC 包装。
 
-> **Deprecation notice.** This modifier is deprecated and will be removed in the future. If you need to suppress WebRTC, consider using the `$nowebrtc` scriptlet.
+> **弃用通知** 这个修饰符已经被弃用并在将来会被移除。如过你需要阻止 WebRTC，考虑使用 `$nowebrtc` 脚本段。
 
 <a id="other-modifier"></a>
 ##### **`other`**
 
-The rule applies to requests for which the type has not been determined or doesn't match the types listed above.
+这条规则作用于类型未被定义或没有在上面列出的类型的请求。
 
 <a id="exceptions-modifiers"></a>
 #### Exception modifiers
