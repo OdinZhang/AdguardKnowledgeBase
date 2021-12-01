@@ -29,6 +29,7 @@ visible: true
             * [$match-case](#match-case-modifier)
         * [Content type modifiers](#content-type-modifiers)
             * [Content type modifiers examples](#content-type-modifiers-examples)
+            * [$document](#document-modifier)
             * [$image](#image-modifier)
             * [$stylesheet](#stylesheet-modifier)
             * [$script](#script-modifier)
@@ -48,7 +49,6 @@ visible: true
             * [$jsinject](#jsinject-modifier)
             * [$urlblock](#urlblock-modifier)
             * [$extension](#extension-modifier)
-            * [$document](#document-modifier)
             * [$stealth](#stealth-modifier)
             * [Generic rules](#generic-rules)
                 * [$generichide](#generichide-modifier)
@@ -84,7 +84,7 @@ visible: true
             * [伪类 `:xpath()`](#extended-css-xpath)
             * [伪类 `:nth-ancestor()`](#extended-css-nth-ancestor)
             * [伪类 `:upward()`](#extended-css-upward)
-            * [伪类 :remove() and pseudo-property `remove`](#remove-pseudos)
+            * [伪类 `:remove()` and pseudo-property `remove`](#remove-pseudos)
         * [Cosmetic rules priority](#cosmetic-rules-priority) 
     * [HTML过滤规则](#html-filtering-rules)
         * [Syntax](#html-filtering-rules-syntax)
@@ -100,6 +100,7 @@ visible: true
         * [Syntax](#non-basic-rules-modifiers-syntax)
         * [$app](#non-basic-rules-modifiers-app)
         * [$domain](#non-basic-rules-modifiers-domain)
+        * [$path](#non-basic-rules-modifiers-path)
 * [Information for filters maintainers](#for_maintainers)
     * [Pre-processor directives](#pre_processor)
     * [Hints](#hints)
@@ -258,7 +259,7 @@ visible: true
 modifiers = [modifier0, modifier1[, ...[, modifierN]]]
 ```
 
-* **`pattern`** — 地址掩码。每一个请求的 URL 都与这个掩码核对。您也可以使用模板里的特殊字符它们的说明[如下](#basic-rules-special-characters)。
+* **`pattern`** — 地址掩码。每一个请求的 URL 都与这个掩码核对。您也可以使用模板里的特殊字符它们的说明[如下](#basic-rules-special-characters)。请注意 AdGuard 会把 URLs 修剪为 4096 个字符长来加快匹配速度和避免 URLs 过长的问题。
 * **`@@`** — 一个例外规则的标记。要想取消阻止您的规则，请使用这个标记作为您规则的开头。
 * **`modifiers`** — “明确”基础规则的参数。一些用来限制规则的范围，一些可以完全改变规则的工作方式。
 
@@ -302,7 +303,7 @@ pattern = "/" regexp "/"
 
 * `||example.com/ads/*` — 一个简单的规则，匹配的地址比如 `http://example.com/ads/banner.jpg` 乃至 `http://subdomain.example.com/ads/otherbanner.jpg`。
 
-* `||example.org^$third-party` —  一个阻止请求 `example.org` 和它的子域名的第三方请求的规则。
+* `||example.org^$third-party` —  这条规则阻止请求 `example.org` 和它的子域名的第三方请求。
 
 * `@@||example.com$document` — 一般的例外规则。它完全取消过滤 `example.com` 和所有子域名。有许多可以使用在例外规则上的修饰符。想要了解更多，请点击[下方](#exceptions-modifiers)的链接。
 
@@ -337,8 +338,8 @@ pattern = "/" regexp "/"
 
 ###### `domain` 和 `~` 示例
 
-* `||baddomain.com^$domain=~example.org` — 一个阻止与指定的掩码匹配并且从任何域名除了 `example.org` 或它的子域名发送的请求的规则。
-* `||baddomain.com^$domain=example.org|~foo.example.org` — 这个规则阻止了发送自 `example.org` 和它除 `foo.example.org` 之外所有的子域名的请求。
+* `||baddomain.com^$domain=~example.org` — 这条规则阻止与模式匹配并且从任何域名除了 `example.org` 和它的子域名发送的请求。
+* `||baddomain.com^$domain=example.org|~foo.example.org` — 这个规则阻止了发送自 `example.org` 和它除 `foo.example.org` 之外的子域名的请求。
 
 ###### `domain` 修饰符匹配目标域名
 
@@ -373,15 +374,17 @@ pattern = "/" regexp "/"
 <a id="third-party-modifier"></a>
 ##### **`third-party`**
 
-限制第三方和自己的请求。第三方请求是来自不同的域名的请求。比如一个从 `domain.com` 到 `example.org` 的请求就是第三方请求。
+限制第三方和自己的请求。第三方请求是来自一个不同的域名的请求。比如一个从 `domain.com` 到 `example.org` 的请求就是第三方请求。
 
-> **子域名** 请注意从域名到它的子域名的请求（反过来也一样）并不认为是第三方请求。比方说一个从 `example.org` 发送到 `subdomain.example.org` 的请求不是一个第三方请求。
+> 第三方请求应满足下列条件之一：
+> 1) 它的引用不是目标域名的子域名，反之亦然。比方说，一个来自 `example.org` 到 `subdomain.example.org` 的请求就不是第三方请求。
+> 2) 它的 `Sec-Fetch-Site` 头被设置为 `cross-site`。
 
 如果有一个 `third-party` 修饰符，这条规则仅被作用于第三方请求。
 
 ###### `third-party` 示例
 
-* `||domain.com^$third-party` — 规则被作用在除了 `domain.com` 和它的子域名之外的所有域名之上。第三方请求示例： `http://example.org/banner.jpg`.
+* `||domain.com^$third-party` — 这条规则作用在除了 `domain.com` 和它的子域名之外的所有域名之上。第三方请求示例： `http://example.org/banner.jpg`.
 
 如果有一个 `~third-party` 修饰符，这条规则将仅作用于没有来自第三方的请求。也就是说，它们必须被同一个域名所发送。
 
@@ -393,7 +396,7 @@ pattern = "/" regexp "/"
 <a id="popup-modifier"></a>
 ##### **`popup`**
 
-AdGuard will try to close the browser tab with any address that matches a blocking rule with this modifier. Please note that not all the tabs can be closed.
+AdGuard 会尝试关闭任何与此修饰符的阻止规则相匹配的地址的浏览器标签页。请注意不是所有的标签页都会被关闭。
 
 ###### `popup`examples
 
@@ -425,6 +428,27 @@ There is a set of modifiers, which can be used to limit the rule's application a
 * `||example.org^$image` — 对应所有来自 `example.org` 的图片。
 * `||example.org^$script,stylesheet` — 对应所有来自 `example.org` 的脚本和样式。
 * `||example.org^$~image,~script,~stylesheet` — 对应所有除了图片、脚本和样式以外来自 `example.org` 的请求。
+
+<a id="document-modifier"></a>
+##### **`document`**
+
+The rule corresponds to the main frame document requests, i.e. HTML documents that are loaded in the browser tab. It does not match iframes (there's a `$subdocument` modifier for these).
+
+By default, AdGuard won't block the requests that are loaded in the browser tab (e.g. "main frame bypass"). The idea is not to prevent pages from loading as the user clearly indicated that they want this page to be loaded. However, if the `$document` modifier is specified explicitly, AdGuard does not use that logic and prevents the page load. Instead, it responds with a "blocking page".
+
+If this modifier is used with an exclusion rule (`@@`), it completely disables blocking on corresponding pages. It is equivalent to using `$elemhide`, `$content`, `$urlblock`, `$jsinject`, and `$extension` modifiers simultaneously.
+
+> **Compatibility with different versions of AdGuard.** Blocking request type logic now only supported by dev-build of AdGuard.
+
+###### `document` example
+
+* `@@||example.com^$document` — completely disables filtering on all pages at `example.com` and all subdomains.
+* `@@||example.com^$document,~extension` — completely disables blocking on any pages at `example.com` and all subdomains, but continues to run userscripts there.
+
+* `||example.com^$document` — blocks HTML document request to `example.com` with a blocking page.
+* `||example.com^$document,redirect=noopframe` — redirects HTML document request to `example.com` to an empty html document.
+* `||example.com^$document,removeparam=test` — removes `test` query parameter from HTML document request to  `example.com`.
+* `||example.com^$document,replace=/test1/test2/` — replaces `test1` with `test2` in  HTML document request to `example.com`.
 
 <a id="image-modifier"></a>
 ##### **`image`**
@@ -560,16 +584,6 @@ Disables all userscripts on the pages matching this rule. Note, that this modifi
 
 * `@@||example.com^$extension` — userscripts won't work on all pages of the `example.com` website.
 
-<a id="document-modifier"></a>
-##### **`document`**
-
-Completely disables blocking on corresponding pages. It is equal to simultaneous use of `elemhide`, `content`, `urlblock`, `jsinject` and `extension`.
-
-###### `document` example
-
-* `@@||example.com^$document` — completely disables filtering on all pages at `example.com` and all subdomains.
-* `@@||example.com^$document,~extension` — completely disables blocking on any pages at `example.com` and all subdomains, but continues to run userscripts there.
-
 <a id="stealth-modifier"></a>
 ##### **`stealth`**
 
@@ -642,6 +656,8 @@ These modifiers are able to completely change the behaviour of basic rules.
 >`$removeparam` and `$queryprune` are completely interchangeable and are aliases to each other.
 
 Rules with `$removeparam` modifier are intended to to strip query parameters from requests' URLs. Please note that such rules are only applied to `GET`, `HEAD`, and `OPTIONS` requests.
+
+> `$removeparam` rules that do not have any content-type modifiers will match only requests where content type is `document`.
 
 ##### Syntax
 
@@ -919,7 +935,7 @@ For the requests matching a `$csp` rule, we will strengthen response's security 
 
 ##### `csp` examples
 
-* `||example.org^$csp=frame-src 'none'` — prohibits all frames on example.org and it's subdomains.
+* `||example.org^$csp=frame-src 'none'` — this rule blocks all frames on example.org and its subdomains.
 * `@@||example.org/page/*$csp=frame-src 'none'` — disables all rules with the `$csp` modifier exactly matching `frame-src 'none'` on all the pages matching the rule pattern. For instance, the rule above.
 * `@@||example.org/page/*$csp` — disables all the `$csp` rules on all the pages matching the rule pattern.
 * `||example.org^$csp=script-src 'self' 'unsafe-eval' http: https:` — disables inline scripts on all the pages matching the rule pattern.
@@ -987,13 +1003,11 @@ This modifier lets you narrow the rule coverage down to a specific application (
 * Windows - use the process name (i.e. `chrome.exe`).
 * Mac - use the bundle ID or the process name (i.e. `com.google.Chrome`).
 
->For Mac, you can find out the bundle ID or the process name of the app by viewing the respective request details in the Filtering log
-
-In the case of Android, use the apps' package names (i.e. `org.example.app`). In the case of Windows
+>For Mac, you can find out the bundle ID or the process name of the app by viewing the respective request details in the Filtering log.
 
 ##### `app` examples 
 
-* `||baddomain.com^$app=org.example.app` — a rule to block requests that match the specified mask, and are sent from the `com.adguard.android` Android app.
+* `||baddomain.com^$app=org.example.app` — a rule to block requests that match the specified mask, and are sent from the `org.example.app` Android app.
 * `||baddomain.com^$app=org.example.app1|org.example.app2` — the same rule, but it works for both `org.example.app1` and `org.example.app2` apps.
 
 If you want the rule not to be applied to certain apps, start the app name with `~` sign.
@@ -1197,7 +1211,7 @@ Use `@@` to negate `$removeheader`:
 
 ##### Examples
 
-* `||example.org^$removeheader=refresh` — removes `Refresh` header from all HTTP responses returned by `example.org` and it's subdomains.
+* `||example.org^$removeheader=refresh` — removes `Refresh` header from all HTTP responses returned by `example.org` and its subdomains.
 * `||example.org^$removeheader=request:x-client-data` — removes `X-Client-Data` header from all HTTP requests.
 * This block of rules removes `Refresh` and `Location` headers from all HTTP responses returned by `example.org` save for requests to `example.org/path/*`, for which no headers will be removed:
 
@@ -1253,7 +1267,7 @@ You can use both approaches in a single rule. For example, `example.org,~subdoma
 
 * `example.com##div.textad` — hides a `div` with a class `textad` at `example.com` and all subdomains.
 * `example.com,example.org###adblock` - hides an element with attribute `id` equals `adblock` at `example.com`, `example.org` and all subdomains.
-* `~example.com##.textad` - hides an element with a class `textad` at all domains, except `example.com` and it's subdomains.
+* `~example.com##.textad` - hides an element with a class `textad` at all domains, except `example.com` and its subdomains.
 
 > **Important!** Safari doesn't support both permitted and restricted domains. So the rules like `example.org,~foo.example.org##.textad` are invalid in AdGuard for Safari.
 
@@ -1355,9 +1369,9 @@ We **strongly recommend** using these markers any time when you use an extended 
 
 #### Examples
 
-* `example.org#?#div:has(> a[target="_blank"][rel="nofollow"])` — this rule will block all `div` elements that contain link as a child node with `[target="_blank"][rel="nofollow"]` attributes. The rule will only work for `example.org` and all it's subdomains.
-* `example.com#$?#h3:contains(cookies) { display: none!important; }` — this rule will set style  `display: none!important` for all `h3` elements that contain `cookies` word. The rule will only work for `example.com` and all it's subdomains.
-* `example.net#?#.banner:matches-css(width: 360px)` — this rule will block all `.banner` elements that contain `width: 360px` style property. The rule will only work for `example.net` and all it's subdomains.
+* `example.org#?#div:has(> a[target="_blank"][rel="nofollow"])` — this rule blocks all `div` elements containing a child node that has a link with the attributes `[target="_blank"][rel="nofollow"]`. The rule applies only to `example.org` and its subdomains.
+* `example.com#$?#h3:contains(cookies) { display: none!important; }` — this rule sets the style `display: none!important` to all `h3` elements that contain the word `cookies`. The rule applies only to `example.com` and all its subdomains.
+* `example.net#?#.banner:matches-css(width: 360px)` — this rule blocks all `.banner` elements with the style property `width: 360px`. The rule applies only to `example.net` and its subdomains.
 * `example.net#@?#.banner:matches-css(width: 360px)` — this rule will disable the previous rule.
 
 > Please note that now you can apply simple selectors using the ExtCss engine by using a rule like this:
@@ -1649,7 +1663,7 @@ div:matches-property("memoizedProps._owner.src"="/ad/")
 
 This pseudo-class allows to select an element by evaluating an XPath expression.
 
-> **Limited to work properly only at the end of selector, except of [pseudo-class :remove()](#remove-pseudos).**
+> **Can be placed only at the end of a selector, except for [pseudo-class `:remove()`](#remove-pseudos).**
 
 The `:xpath()` pseudo-class is different from other pseudo-classes. Whereas all other operators are used to filter down a resultset of elements, the `:xpath()` operator can be used both to create a new resultset or filter down an existing one. For this reason, subject `selector` is optional. For example, an `:xpath()` operator could be used to create a new resultset consisting of all ancestor elements of a subject element, something not otherwise possible with either plain CSS selectors or other procedural operators.
 
@@ -1678,7 +1692,7 @@ This pseudo-class allows to lookup the nth ancestor relative to the currently se
 
 It is a low-overhead equivalent to `:xpath(..[/..]*)`.
 
-> **Limited to work properly only at the end of selector, except of [pseudo-class :remove()](#remove-pseudos).**
+> **Can be placed only at the end of a selector, except for [pseudo-class `:remove()`](#remove-pseudos).**
 
 **Syntax**
 ```
@@ -1699,7 +1713,7 @@ div:has-text(/test/):nth-ancestor(2)
 
 This pseudo-class allows to lookup the ancestor relative to the currently selected node.
 
-> **Limited to work properly only at the end of selector, except of [pseudo-class :remove()](#remove-pseudos).**
+> **Can be placed only at the end of a selector, except for [pseudo-class `:remove()`](#remove-pseudos).**
 
 **Syntax**
 ```
@@ -1727,7 +1741,7 @@ div:has-text(/test/):upward(2)
 
 Sometimes, it is necessary to remove a matching element instead of hiding it or applying custom styles. In order to do it, you can use pseudo-class `:remove()` as well as pseudo-property `remove`.
 
-> **Pseudo-class `:remove()` is limited to work properly only at the end of selector.**
+> **Pseudo-class `:remove()` can be placed only at the end of a selector.**
 
 **Syntax**
 ```
@@ -1795,7 +1809,7 @@ attributes = "[" name0 = value0 "]" "[" name1 = value2 "]" ... "[" nameN = value
 example.org$$script[data-src="banner"]
 ```
 
-This rule will delete all `script` elements with `data-src` attribute that contain `banner` substring. The rule will only work for `example.org` and all it's subdomains.
+This rule removes all `script` elements with the attribute `data-src` containing the substring `banner`. The rule applies only to `example.org` and all its subdomains.
 
 <a id="html-filtering-rules-attributes"></a>
 #### Special attributes
@@ -2012,7 +2026,7 @@ basic rules.
 `domain` examples:
 * `[$domain=example.com]##.textad` — hides a `div` with a class `textad` at `example.com` and all subdomains.
 * `[$domain=example.com|example.org]###adblock` - hides an element with attribute `id` equals `adblock` at `example.com`, `example.org` and all subdomains.
-* `[$domain=~example.com]##.textad` - hides a `div` with a class `textad` at all domains, except `example.com` and it's subdomains.
+* `[$domain=~example.com]##.textad` - this rule hides `div` elements of the class `textad` for all domains, except `example.com` and its subdomains.
 
 Please note that there are 2 ways to specify domain restrictions for non-basic rules:
     1) the "classic" way is to specify domains before rule mask and attributes: `example.com##.textad`
@@ -2022,6 +2036,34 @@ But rules with mixed style domains restriction are considered invalid. So, for e
 `[$domain=example.org]example.com##.textad` will be rejected.
 
 > **不同版本 AdGuard 的兼容性** This type of rules is supported by AdGuard for Windows, Mac and Android. **Developer builds only at this moment.**
+
+<a id="non-basic-rules-modifiers-path"></a>
+### path
+
+`path` limits the rule application area to specific locations or pages on websites.
+
+#### Syntax
+```
+path=pattern
+```
+
+`pattern` is a path mask to which the rule is restricted. Its syntax and behavior are pretty much the same as with the [pattern for basic rules](#basic-rules-syntax). You can also use [special characters](#basic-rules-special-characters), except for `||`, which does not make any sense in this case (see examples below).
+
+
+> Please note that `path` modifier matches the query string as well.
+
+> `path` modifier supports regular expressions in [the same way](#regexp-support) basic rules do.
+
+`path` examples:
+* `[$path=page.html]##.textad` - hides a `div` with a class `textad` at `/page.html` or `/page.html?<query>` or `/sub/page.html` or `/another_page.html`
+* `[$path=/page.html]##.textad` - hides a `div` with a class `textad` at `/page.html` or `/page.html?<query>` or `/sub/page.html` of any domain but not at `/another_page.html`
+* `[$path=|/page.html]##.textad` - hides a `div` with a class `textad` at `/page.html` or `/page.html?<query>` of any domain but not at `/sub/page.html`
+* `[$path=/page.html|]##.textad` - hides a `div` with a class `textad` at `/page.html` or `/sub/page.html` of any domain but not at `/page.html?<query>` 
+* `[$path=/page*.html]example.com##.textad` - hides a `div` with a class `textad` at `/page1.html` or `/page2.html` or any other path matching `/page<...>.html` of `example.com`
+* `[$domain=example.com,path=/page.html]##.textad` - hides a `div` with a class `textad` at `page.html` of `example.com` and all subdomains but not at `another_page.html`
+* `[$path=/\\/(sub1|sub2)\\/page\\.html/]##.textad` - hides a `div` with a class `textad` at both `/sub1/page.html` and `/sub2/page.html` of any domain (please, note the [escaped special characters](#non-basic-rules-modifiers-syntax))
+
+> **Compatibility with different versions of AdGuard.** Rules with `path` modifier are supported by AdGuard for Windows, Mac, Android, and AdGuard browser extensions for Chrome, Firefox, Edge. **Developer builds only at this moment.**
 
 <a id="for_maintainers"></a>
 ## Information for filters maintainers 
@@ -2152,7 +2194,7 @@ rules_list
   - `custom` — AdGuard Custom content blocker
   - `all` — special keyword that means that the rules must be included into **all** content blockers
 - `rules_list` — list of rules
-- `!#safari_cb_affinity(content_blockers)` — end of the block
+- `!#safari_cb_affinity` — end of the block
 
 **Examples**
 ```
