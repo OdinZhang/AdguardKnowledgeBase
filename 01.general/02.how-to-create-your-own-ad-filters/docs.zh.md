@@ -27,7 +27,7 @@ visible: true
             * [$third-party](#third-party-modifier)
             * [$popup](#popup-modifier)
             * [$match-case](#match-case-modifier)
-        * [Content type modifiers](#content-type-modifiers)
+        * [内容类型修饰符](#content-type-modifiers)
             * [Content type modifiers examples](#content-type-modifiers-examples)
             * [$document](#document-modifier)
             * [$image](#image-modifier)
@@ -371,6 +371,7 @@ pattern = "/" regexp "/"
 
 > **重要！** Safari 并不同时支持允许和限制域名。因此像 `||baddomain.com^$domain=example.org|~foo.example.org` 的规则在 AdGuard for Safari 里是不工作的。
 
+
 <a id="third-party-modifier"></a>
 ##### **`third-party`**
 
@@ -392,38 +393,37 @@ pattern = "/" regexp "/"
 
 * `||domain.com$~third-party` — 这条规则作用于 `domain.com` 而不是其他的域名。比如请求 `http://domain.com/icon.ico` 就不是一个第三方请求。
 
-<!-- TODO 从这里开始翻译 -->
 <a id="popup-modifier"></a>
 ##### **`popup`**
 
 AdGuard 会尝试关闭任何与此修饰符的阻止规则相匹配的地址的浏览器标签页。请注意不是所有的标签页都会被关闭。
 
-###### `popup`examples
+###### `popup` 示例
 
-* `||domain.com^$popup` — if you try to go to `http://domain.com/` from any page in the browser, a new tab in which specified site has to be opened will be closed by this rule.
+* `||domain.com^$popup` — 如果你尝试从浏览器的任何页面跳转到 `http://domain.com/` ，此规则将关闭打开指定站点的新标签。
 
-> It may not work if the popped up page is cached by the browser. It also will not work with some tricky popup methods. In such cases, it is better to use [AdGuard Popup Blocker](https://github.com/AdguardTeam/PopupBlocker) extension.
+> 如果弹出页面被浏览器缓存的话此规则并不会工作。对于一些棘手的弹出页面此规则也不会工作。在这些情形下，最好使用  [AdGuard Popup Blocker](https://github.com/AdguardTeam/PopupBlocker) 拓展。
 
-> **Important!** Unlike with browser extensions, `$popup` modifier is very unreliable when used with AdGuard apps for Windows, Mac and Android. In AdGuard for Safari and iOS, `$popup` rules will simply block the page right away.
+> **重要！** 与浏览器拓展不同， `$popup` 修饰符当使用 AdGuard Windows，Mac 和 Android 版应用时非常不可靠。在 AdGuard Safari 和 iOS 版中，`$popup` 规则将立即阻止页面。
 
 <a id="match-case-modifier"></a>
 ##### **`match-case`**
 
-This modifier defines a rule which applies only to addresses that match the case. Default rules are case-insensitive.
+此修饰符定义了适用于匹配大小写的地址的规则。默认规则不区分大小写。
 
-###### `match-case` examples
+###### `match-case` 示例
 
-* `*/BannerAd.gif$match-case` — this rule will block `http://example.com/BannerAd.gif`, but not `http://example.com/bannerad.gif`.
+* `*/BannerAd.gif$match-case` — 此规则将阻止 `http://example.com/BannerAd.gif`，但不阻止 `http://example.com/bannerad.gif`。
 
 <a id="content-type-modifiers"></a>
-#### Restriction by content type
+#### 内容类型的限制
 
-There is a set of modifiers, which can be used to limit the rule's application area to certain type of content. These modifiers can also be combined to cover, for example, both images and scripts.
+这里有一系列用来限制规则的应用范围到确定内容的类型的修饰符。这些修饰符也可以相互结合，例如同时支持图片和脚本。
 
-> **不同版本 AdGuard 的兼容性** Please note that there is a big difference in how AdGuard determines the content type on different platforms. For browser extensions, content type for every request is provided by browser. AdGuard for Windows, Mac and Android use following method: first we try to determine the type of the request by the `Sec-Fetch-Dest` request header or by the filename extension. If the request is not blocked at this stage, the type will be determined using the `Content-Type` header at the beginning of the server response.
+> **不同版本 AdGuard 的兼容性** 请注意，AdGuard 在不同的平台上确定内容类型上有很大的差异。对于浏览器拓展而言，每个请求的内容类型由浏览器提供。AdGuard Windows，Mac 和 Android 版则遵循以下规则：首先我们尝试使用 `Sec-Fetch-Dest` 请求头或文件名后缀来确定请求的类型。如果这种情形下请求没有被阻止，将会使用在服务器相应的 `Content-Type` 请求头作为将要确定的类型。
 
 <a id="content-type-modifiers-examples"></a>
-##### Content type modifiers examples
+##### 内容类型修饰符示例
 
 * `||example.org^$image` — 对应所有来自 `example.org` 的图片。
 * `||example.org^$script,stylesheet` — 对应所有来自 `example.org` 的脚本和样式。
@@ -432,23 +432,23 @@ There is a set of modifiers, which can be used to limit the rule's application a
 <a id="document-modifier"></a>
 ##### **`document`**
 
-The rule corresponds to the main frame document requests, i.e. HTML documents that are loaded in the browser tab. It does not match iframes (there's a `$subdocument` modifier for these).
+此规则对应主框架的文档请求，例如在浏览器标签页内加载的 HTML 文档。它并不匹配内嵌框架（有一个 `$subdocument` 修饰符来处理这种情况）。
 
-By default, AdGuard won't block the requests that are loaded in the browser tab (e.g. "main frame bypass"). The idea is not to prevent pages from loading as the user clearly indicated that they want this page to be loaded. However, if the `$document` modifier is specified explicitly, AdGuard does not use that logic and prevents the page load. Instead, it responds with a "blocking page".
+默认情况下，AdGuard 并不会阻止在浏览器标签页加载的请求（例如“主框架绕过”）。这个想法并不是为了阻止页面的加载，而是用户明确表示他们想要页面被加载。然而如果 `$document` 修饰符被明确指定，AdGuard 并不会遵从上述逻辑并且阻止页面加载。相对的，它返回一个“阻止页面”。
 
-If this modifier is used with an exclusion rule (`@@`), it completely disables blocking on corresponding pages. It is equivalent to using `$elemhide`, `$content`, `$urlblock`, `$jsinject`, and `$extension` modifiers simultaneously.
+如果此修饰符使用了排除规则（`@@`），它完全不会阻止匹配的页面。这相当于同时使用`$elemhide`，`$content`，`$urlblock`，`$jsinject` 和 `$extension` 修饰符。
 
-> **Compatibility with different versions of AdGuard.** Blocking request type logic now only supported by dev-build of AdGuard.
+> **不同版本 AdGuard 的兼容性** 阻止请求类型逻辑现在仅支持开发版的 AdGuard。
 
-###### `document` example
+###### `document` 示例
 
-* `@@||example.com^$document` — completely disables filtering on all pages at `example.com` and all subdomains.
-* `@@||example.com^$document,~extension` — completely disables blocking on any pages at `example.com` and all subdomains, but continues to run userscripts there.
+* `@@||example.com^$document` — 完全禁用在 `example.com` 和所有子域名上所有页面的过滤。
+* `@@||example.com^$document,~extension` — 完全不会阻止在 `example.com` 和所有子域名上所有页面，但是仍然会运行用户脚本。
 
-* `||example.com^$document` — blocks HTML document request to `example.com` with a blocking page.
-* `||example.com^$document,redirect=noopframe` — redirects HTML document request to `example.com` to an empty html document.
-* `||example.com^$document,removeparam=test` — removes `test` query parameter from HTML document request to  `example.com`.
-* `||example.com^$document,replace=/test1/test2/` — replaces `test1` with `test2` in  HTML document request to `example.com`.
+* `||example.com^$document` — 以阻止页面来阻止请求 `example.com` 的 HTML 文档。
+* `||example.com^$document,redirect=noopframe` — 重定向请求 `example.com` 的 HTML 文档到一个空 HTML 文档。
+* `||example.com^$document,removeparam=test` — 在请求 `example.com` 的 HTML 文档中移除 `test` 查询参数。
+* `||example.com^$document,replace=/test1/test2/` — 在请求 `example.com` 的 HTML 文档中替换 `test1` 为 `test2`。
 
 <a id="image-modifier"></a>
 ##### **`image`**
@@ -520,7 +520,7 @@ If this modifier is used with an exclusion rule (`@@`), it completely disables b
 
 > 请注意，阻止 WebRTC 会干扰某些浏览器应用程序的工作，例如信息、聊天、视频或游戏。
 
-###### `webrtc` example
+###### `webrtc` 示例
 
 * `||example.com^$webrtc,domain=example.org` - 此规则会阻止连接 `example.com` 和 `example.org` 的 webRTC。
 * `@@*$webrtc,domain=example.org` - 此规则禁用了 `example.org`的 RTC 包装。
@@ -532,6 +532,7 @@ If this modifier is used with an exclusion rule (`@@`), it completely disables b
 
 这条规则作用于类型未被定义或没有在上面列出的类型的请求。
 
+<!-- TODO -->
 <a id="exceptions-modifiers"></a>
 #### Exception modifiers
 
